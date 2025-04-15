@@ -1,9 +1,11 @@
 
 import { useState, useRef, ChangeEvent } from 'react';
-import { Upload, Lock, Unlock } from 'lucide-react';
+import { Upload, Lock, Unlock, FileArchive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 
 interface Dimensions {
   width: number;
@@ -15,6 +17,7 @@ export default function ImageResizer() {
   const [originalDimensions, setOriginalDimensions] = useState<Dimensions>({ width: 0, height: 0 });
   const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
   const [maintainAspectRatio, setMaintainAspectRatio] = useState(true);
+  const [compressionQuality, setCompressionQuality] = useState(80);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -84,7 +87,7 @@ export default function ImageResizer() {
       ctx.drawImage(img, 0, 0, dimensions.width, dimensions.height);
       const link = document.createElement('a');
       link.download = 'resized-image.png';
-      link.href = canvas.toDataURL('image/png');
+      link.href = canvas.toDataURL('image/jpeg', compressionQuality / 100);
       link.click();
     };
   };
@@ -158,6 +161,25 @@ export default function ImageResizer() {
                 />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <FileArchive className="h-4 w-4 text-purple-400" />
+                <Label className="text-sm text-gray-600">Compression Quality</Label>
+              </div>
+              <div className="flex items-center gap-4">
+                <Slider
+                  value={[compressionQuality]}
+                  onValueChange={(values) => setCompressionQuality(values[0])}
+                  max={100}
+                  min={1}
+                  step={1}
+                  className="flex-1"
+                />
+                <span className="text-sm text-gray-600 min-w-[3rem]">{compressionQuality}%</span>
+              </div>
+            </div>
+
             <Button
               className="w-full bg-purple-500 hover:bg-purple-600 text-white transition-colors"
               onClick={handleDownload}
