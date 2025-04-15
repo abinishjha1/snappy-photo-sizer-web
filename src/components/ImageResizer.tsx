@@ -1,3 +1,4 @@
+
 import { useState, useRef, ChangeEvent } from 'react';
 import { Upload, Lock, Unlock, FileArchive, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
 
 interface Dimensions {
   width: number;
@@ -90,15 +92,16 @@ export default function ImageResizer() {
     canvas.width = dimensions.width;
     canvas.height = dimensions.height;
 
-    const img = new Image();
-    img.src = selectedImage;
+    const img = document.createElement('img');
     img.onload = () => {
       ctx.drawImage(img, 0, 0, dimensions.width, dimensions.height);
       const link = document.createElement('a');
       link.download = 'resized-image.png';
       link.href = canvas.toDataURL('image/jpeg', compressionQuality / 100);
       link.click();
+      toast.success('Image downloaded successfully!');
     };
+    img.src = selectedImage;
   };
 
   return (
